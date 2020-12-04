@@ -14,7 +14,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
+import importlib
+import sys
 from contextlib import ExitStack, contextmanager
 from unittest import mock
 
@@ -78,4 +79,10 @@ def mock_plugin_manager(plugins=None, **kwargs):
             mock.patch("airflow.plugins_manager.import_errors", kwargs.get("import_errors", {}))
         )
 
-        yield
+        try:
+            yield
+        finally:
+            # Reset airflow.macros when exiting the context manager as it may have been altered by
+            # invocations of airflow.plugins_manager.integrate_macros_plugins.
+            del sys.modules['airflow.macros']
+            importlib.import_module('airflow.macros')
