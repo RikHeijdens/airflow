@@ -20,6 +20,10 @@
 import {{ pickling_library }}
 import sys
 
+# Ensure airflow.macros has been loaded properly.
+import airflow.plugins_manager
+airflow.plugins_manager.integrate_macros_plugins()
+
 # Read args
 {% if op_args or op_kwargs %}
 with open(sys.argv[1], "rb") as file:
